@@ -1,0 +1,16 @@
+{
+  "name": "turunan",
+  "version": "1.0.0",
+  "description": "Bot Telegram + Google Sheets untuk pohon keluarga (family tree)",
+  "main": "index.js",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "scripts": {
+    "test": "jest",
+    "test:coverage": "jest --coverage"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

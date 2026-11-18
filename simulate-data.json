@@ -1,0 +1,36 @@
+{
+  "ADMIN_IDS": ["777777"],
+  "BOT_USERNAME": "turunan_bot",
+  "Setting": [
+    ["kunci", "nilai", "tipe", "keterangan"],
+    ["nama_keluarga", "Keluarga Besar Satiri", "teks", "Nama keluarga"],
+    ["maks_telegram_per_person", "2", "angka", "Maks akun per orang"],
+    ["maks_person_per_telegram", "5", "angka", "Maks orang per akun"],
+    ["tampil_generasi_maks", "4", "angka", "Kedalaman pohon"],
+    ["admin_tambahan", "", "teks", "Admin tambahan"]
+  ],
+  "Orang": [
+    ["id_person", "nama", "jenis_kelamin", "tanggal_lahir", "tanggal_wafat", "status", "no_hp", "alamat", "catatan", "dibuat_pada", "dibuat_oleh"],
+    ["P-001", "Ahmad", "L", "1970-01-01", "", "aktif", "0812", "Jl. Mawar", "", "2026-01-01", "777777"],
+    ["P-002", "Siti", "P", "1972-02-02", "", "aktif", "", "", "", "2026-01-01", "777777"],
+    ["P-003", "Budi", "L", "1995-03-03", "", "aktif", "", "", "", "2026-01-01", "777777"],
+    ["P-004", "Rina", "P", "1998-04-04", "", "aktif", "", "", "", "2026-01-01", "777777"]
+  ],
+  "OrangTuaAnak": [
+    ["id_relasi", "id_orangtua", "id_anak", "jenis", "catatan"],
+    ["R-001", "P-001", "P-003", "kandung", ""],
+    ["R-002", "P-002", "P-003", "kandung", ""],
+    ["R-003", "P-001", "P-004", "kandung", ""],
+    ["R-004", "P-002", "P-004", "kandung", ""]
+  ],
+  "Pasangan": [
+    ["id_pasangan", "id_suami", "id_istri", "tanggal_nikah", "tanggal_cerai", "status", "catatan"],
+    ["N-001", "P-001", "P-002", "1990-05-05", "", "menikah", ""]
+  ],
+  "TelegramUser": [
+    ["id_telegram", "username", "nama", "id_person", "peran", "status", "diminta_pada", "diverifikasi_oleh", "diverifikasi_pada"]
+  ],
+  "Pengumuman": [
+    ["timestamp", "kategori", "isi", "pengirim"]
+  ]
+}
