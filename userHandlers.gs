@@ -47,6 +47,7 @@ function formatOrangCard(o, includePrivate, chatId) {
     t += (o.no_hp ? "HP: " + escMd(o.no_hp) + "\n" : "") + (o.alamat ? "Alamat: " + escMd(o.alamat) + "\n" : "");
   }
   if (o.catatan) t += "Catatan: " + escMd(o.catatan) + "\n";
+  if (o.foto_drive_id) t += "📷 Foto tersedia (gunakan /foto " + o.id_person + ")\n";
   t += "\n*Orang tua:*\n" + (ortu.length ? ortu.map((r) => "• " + r.id_orangtua + " " + escMd(cariOrang(r.id_orangtua).nama) + " (" + r.jenis + ")").join("\n") : "• -") + "\n";
   t += "*Pasangan:*\n" + (pas.length ? pas.map((p) => {
     const other = p.id_suami.toUpperCase() === o.id_person.toUpperCase() ? p.id_istri : p.id_suami;
@@ -244,11 +245,32 @@ function handlePengumuman(chatId) {
   sendTelegramMessage(chatId, "📢 *Pengumuman terbaru*\n\n" + rows.map((r) => "• *" + escMd(str(r.kategori)) + "* — " + escMd(str(r.isi)) + " (" + formatTanggal(r.timestamp) + ")").join("\n"));
 }
 
+function handleFoto(chatId, text, senderName, userId, username) {
+  const arg = teksPerintah(text, "/foto");
+  if (!arg) { balasError(chatId, new Error("Gunakan: /foto <id atau nama>")); return; }
+  let o;
+  try { o = cariOrang(arg); } catch (e) { balasError(chatId, e); return; }
+  if (!isAdmin(userId) && !isPersonTerhubung(userId, o.id_person)) {
+    balasError(chatId, new Error("Akses ditolak. Hubungkan akun Anda dengan /gabung " + o.id_person));
+    return;
+  }
+  const fileId = str(o.foto_drive_id);
+  if (!fileId) {
+    sendTelegramMessage(chatId, "📷 Belum ada foto untuk " + o.id_person + " " + escMd(o.nama) + ".");
+    return;
+  }
+  try {
+    kirimFoto(chatId, fileId);
+  } catch (e) {
+    balasError(chatId, new Error("Gagal mengirim foto: " + (e && e.message ? e.message : e)));
+  }
+}
+
 // Node/Jest compatibility
 if (typeof module !== "undefined" && module.exports) {
     const core = (typeof require !== "undefined") ? require("./core.gs") : null;
     if (core) Object.keys(core).forEach((k) => { if (typeof global !== "undefined") global[k] = core[k]; });
     module.exports = {
-        handleStart, handleCari, handleOrang, handleOrangTua, handleAnak, handlePasangan, handleSaudara, handleLeluhur, handleKeturunan, handlePohon, handleStat, handleGabung, handleSaya, handlePengumuman,
+        handleStart, handleCari, handleOrang, handleOrangTua, handleAnak, handlePasangan, handleSaudara, handleLeluhur, handleKeturunan, handlePohon, handleStat, handleGabung, handleSaya, handlePengumuman, handleFoto,
     };
 }

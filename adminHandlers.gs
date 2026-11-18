@@ -202,11 +202,31 @@ function handleSet(chatId, text, senderName, userId, username) {
   sendAdminMessage(chatId, "✅ " + kunci + " diubah menjadi " + nilai);
 }
 
+function handleSetFoto(chatId, text, senderName, userId, username) {
+  if (!requireAdmin(chatId, userId)) return;
+  const arg = teksPerintah(text, "/setfoto");
+  if (!arg) { balasError(chatId, new Error("Gunakan: /setfoto id_person#driveFileId")); return; }
+  const p = arg.split("#");
+  try {
+    const o = setFoto(p[0], p[1]);
+    sendAdminMessage(chatId, "✅ Foto diset untuk " + o.id_person + " " + escMd(o.nama));
+  } catch (e) { balasError(chatId, e); }
+}
+function handleHapusFoto(chatId, text, senderName, userId, username) {
+  if (!requireAdmin(chatId, userId)) return;
+  const arg = teksPerintah(text, "/hapusfoto");
+  if (!arg) { balasError(chatId, new Error("Gunakan: /hapusfoto <id_person>")); return; }
+  try {
+    const o = hapusFoto(arg);
+    sendAdminMessage(chatId, "✅ Foto dihapus untuk " + o.id_person + " " + escMd(o.nama));
+  } catch (e) { balasError(chatId, e); }
+}
+
 // Node/Jest compatibility
 if (typeof module !== "undefined" && module.exports) {
     const core = (typeof require !== "undefined") ? require("./core.gs") : null;
     if (core) Object.keys(core).forEach((k) => { if (typeof global !== "undefined") global[k] = core[k]; });
     module.exports = {
-        handleAdmin, handleTambahOrang, handleEditOrang, handleHubungkanAnak, handleCopotOrang, handleNikah, handleCerai, handleHapusOrang, handleDaftar, handleVerifikasi, handleTolak, handleCabut, handleBuatPengumuman, handleSetting, handleSet,
+        handleAdmin, handleTambahOrang, handleEditOrang, handleHubungkanAnak, handleCopotOrang, handleNikah, handleCerai, handleHapusOrang, handleDaftar, handleVerifikasi, handleTolak, handleCabut, handleBuatPengumuman, handleSetting, handleSet, handleSetFoto, handleHapusFoto,
     };
 }

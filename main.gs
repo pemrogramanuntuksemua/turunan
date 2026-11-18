@@ -15,7 +15,7 @@ const SHEET_PENGUMUMAN = "Pengumuman";
 
 const SHEET_SCHEMA = {
   Setting: ["kunci", "nilai", "tipe", "keterangan"],
-  Orang: ["id_person", "nama", "jenis_kelamin", "tanggal_lahir", "tanggal_wafat", "status", "no_hp", "alamat", "catatan", "dibuat_pada", "dibuat_oleh"],
+  Orang: ["id_person", "nama", "jenis_kelamin", "tanggal_lahir", "tanggal_wafat", "status", "no_hp", "alamat", "catatan", "foto_drive_id", "dibuat_pada", "dibuat_oleh"],
   OrangTuaAnak: ["id_relasi", "id_orangtua", "id_anak", "jenis", "catatan"],
   Pasangan: ["id_pasangan", "id_suami", "id_istri", "tanggal_nikah", "tanggal_cerai", "status", "catatan"],
   TelegramUser: ["id_telegram", "username", "nama", "id_person", "peran", "status", "diminta_pada", "diverifikasi_oleh", "diverifikasi_pada"],
@@ -41,8 +41,11 @@ const CMD_STAT = "/stat";
 const CMD_GABUNG = "/gabung";
 const CMD_SAYA = "/saya";
 const CMD_PENGUMUMAN = "/pengumuman";
+const CMD_FOTO = "/foto";
 
 const CMD_TAMBAHORANG = "/tambahorang";
+const CMD_SETFOTO = "/setfoto";
+const CMD_HAPUSFOTO = "/hapusfoto";
 const CMD_EDITORANG = "/editorang";
 const CMD_HUBUNGKANANAK = "/hubungkananak";
 const CMD_COPOTORANG = "/copotorang";
@@ -93,7 +96,10 @@ function getPrefixHandlers() {
       [CMD_GABUNG]: _G.handleGabung,
       [CMD_SAYA]: _G.handleSaya,
       [CMD_PENGUMUMAN]: _G.handlePengumuman,
+      [CMD_FOTO]: _G.handleFoto,
       [CMD_TAMBAHORANG]: _G.handleTambahOrang,
+      [CMD_SETFOTO]: _G.handleSetFoto,
+      [CMD_HAPUSFOTO]: _G.handleHapusFoto,
       [CMD_EDITORANG]: _G.handleEditOrang,
       [CMD_HUBUNGKANANAK]: _G.handleHubungkanAnak,
       [CMD_COPOTORANG]: _G.handleCopotOrang,

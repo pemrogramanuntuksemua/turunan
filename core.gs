@@ -212,6 +212,7 @@ function getOrang() {
     no_hp: str(o.no_hp),
     alamat: str(o.alamat),
     catatan: str(o.catatan),
+    foto_drive_id: str(o.foto_drive_id),
     dibuat_pada: o.dibuat_pada,
     dibuat_oleh: str(o.dibuat_oleh),
     _row: o._row,
@@ -250,6 +251,7 @@ function tambahOrang(data, oleh) {
     no_hp: str(d.no_hp),
     alamat: str(d.alamat),
     catatan: str(d.catatan),
+    foto_drive_id: str(d.foto_drive_id),
     dibuat_pada: new Date(),
     dibuat_oleh: str(oleh),
   });
@@ -280,6 +282,10 @@ function ubahOrang(idPerson, perubahan) {
   if (punya("hp") || punya("no_hp")) setSel(SHEET_ORANG, o._row, "no_hp", str(d.hp !== undefined ? d.hp : d.no_hp));
   if (punya("alamat")) setSel(SHEET_ORANG, o._row, "alamat", str(d.alamat));
   if (punya("catatan")) setSel(SHEET_ORANG, o._row, "catatan", str(d.catatan) === "-" ? "" : str(d.catatan));
+  if (punya("foto") || punya("foto_drive_id")) {
+    const v = d.foto !== undefined ? d.foto : d.foto_drive_id;
+    setSel(SHEET_ORANG, o._row, "foto_drive_id", str(v) === "-" ? "" : str(v));
+  }
   return cariOrang(o.id_person);
 }
 function normalizeJK(v) {
@@ -287,6 +293,35 @@ function normalizeJK(v) {
   if (s === "l" || s === "laki-laki" || s === "laki laki" || s === "pria") return "L";
   if (s === "p" || s === "perempuan" || s === "wanita") return "P";
   return str(v).toUpperCase();
+}
+
+// Foto
+function getFotoDriveId(idPerson) {
+  const o = cariOrang(idPerson);
+  return str(o.foto_drive_id);
+}
+function setFoto(idPerson, fileId) {
+  const o = cariOrang(idPerson);
+  const id = str(fileId);
+  if (!id) throw new Error("ID file Drive kosong.");
+  setSel(SHEET_ORANG, o._row, "foto_drive_id", id);
+  return cariOrang(o.id_person);
+}
+function hapusFoto(idPerson) {
+  const o = cariOrang(idPerson);
+  setSel(SHEET_ORANG, o._row, "foto_drive_id", "");
+  return cariOrang(o.id_person);
+}
+function kirimFoto(chatId, fileId) {
+  const id = str(fileId);
+  if (!id) throw new Error("ID file Drive kosong.");
+  const file = DriveApp.getFileById(id);
+  const blob = file.getBlob();
+  const url = "https://api.telegram.org/bot" + TELEGRAM_TOKEN + "/sendPhoto";
+  const payload = { chat_id: chatId, photo: blob };
+  const res = UrlFetchApp.fetch(url, { method: "post", payload: payload });
+  Logger.log(res.getContentText());
+  return res.getContentText();
 }
 
 // Relasi orang tua - anak
@@ -781,6 +816,7 @@ if (typeof module !== "undefined" && module.exports) {
     teksPerintah, balas, balasError, tolakAdmin,
     generateIdPerson, generateIdRelasi, generateIdPasangan,
     getOrang, getOrangAktif, cariOrang, tambahOrang, ubahOrang, normalizeJK,
+    getFotoDriveId, setFoto, hapusFoto, kirimFoto,
     getRelasiOrtu, getOrangTua, getAnak, hubungkanAnak, copotOrang,
     getPasanganRows, getPasanganPerson, nikah, cerai,
     getSaudara, ancestors, descendants,

@@ -25,7 +25,7 @@ Semua tab dibuat otomatis oleh `initSheets()` / `setupSheets()`.
 | Tab | Kolom |
 |---|---|
 | `Setting` | `kunci, nilai, tipe, keterangan` |
-| `Orang` | `id_person, nama, jenis_kelamin, tanggal_lahir, tanggal_wafat, status, no_hp, alamat, catatan, dibuat_pada, dibuat_oleh` |
+| `Orang` | `id_person, nama, jenis_kelamin, tanggal_lahir, tanggal_wafat, status, no_hp, alamat, catatan, foto_drive_id, dibuat_pada, dibuat_oleh` |
 | `OrangTuaAnak` | `id_relasi, id_orangtua, id_anak, jenis, catatan` |
 | `Pasangan` | `id_pasangan, id_suami, id_istri, tanggal_nikah, tanggal_cerai, status, catatan` |
 | `TelegramUser` | `id_telegram, username, nama, id_person, peran, status, diminta_pada, diverifikasi_oleh, diverifikasi_pada` |
@@ -38,6 +38,7 @@ Semua tab dibuat otomatis oleh `initSheets()` / `setupSheets()`.
 - **Pernikahan** disimpan di `Pasangan` (status: `menikah`, `cerai`, `wafat`).
 - **Saudara** tidak disimpan eksplisit, diturunkan dari kesamaan orang tua.
 - **Status orang**: `aktif`, `wafat`, `nonaktif` (soft-delete via nonaktif).
+- **Foto**: disimpan sebagai ID file Google Drive di kolom `foto_drive_id`. Bot mengirim foto dengan mengambil blob dari Drive. Perintah `/foto` terpisah dari kartu teks.
 - **Keterkaitan Telegram ↔ Orang** disimpan di `TelegramUser`. Status: `menunggu`, `aktif`, `ditolak`, `dicabut`. Baris `ditolak`/`dicabut` dipakai ulang saat mengajukan lagi.
 - Kuota: `maks_telegram_per_person` (default 2) dan `maks_person_per_telegram` (default 5); nilai `0` = tanpa batas.
 
@@ -83,6 +84,7 @@ Perintah ini dijalankan dari editor Apps Script, bukan lewat bot.
 | `/gabung <id>` | Hubungkan akun (DM only) | `/gabung P-001` |
 | `/saya` | Cek keterkaitan (DM only) | `/saya` |
 | `/pengumuman` | 5 pengumuman terbaru | `/pengumuman` |
+| `/foto <id>` | Kirim foto orang dari Google Drive | `/foto P-001` |
 
 ### Khusus pengurus (`ADMIN_IDS`)
 
@@ -95,6 +97,8 @@ Perintah ini dijalankan dari editor Apps Script, bukan lewat bot.
 | `/nikah id1#id2#[tanggal]` | Catat pernikahan | `/nikah P-001#P-002#1990-05-05` |
 | `/cerai id_pasangan` | Tandai cerai | `/cerai N-001` |
 | `/hapusorang id` | Nonaktifkan orang | `/hapusorang P-005` |
+| `/setfoto id_person#driveFileId` | Simpan ID file foto di Google Drive | `/setfoto P-001#1AbC...` |
+| `/hapusfoto id_person` | Hapus referensi foto | `/hapusfoto P-001` |
 | `/daftar [filter]` | Daftar orang | `/daftar` |
 | `/verifikasi <id_person/id_telegram>` | Setujui keterkaitan | `/verifikasi P-001` |
 | `/tolak <id_person/id_telegram>` | Tolak keterkaitan | `/tolak 123456789` |
@@ -117,6 +121,7 @@ Perintah ini dijalankan dari editor Apps Script, bukan lewat bot.
 - `/gabung`, `/saya` hanya jalan di DM.
 - `/orang` di grup hanya menampilkan kartu ringkas tanpa data kontak.
 - Data `no_hp`/`alamat` hanya tampil untuk admin atau akun terhubung via DM.
+- Foto hanya dapat diminta oleh admin atau akun terhubung; di grup bot menolak/mengarahkan ke DM.
 
 ## Struktur kode
 
@@ -148,6 +153,12 @@ npm run test:coverage
 1. Cek Apps Script → Executions/Logs untuk error.
 2. Pastikan perintah dikirim tanpa suffix `@namabot`.
 3. Pastikan deploy memakai URL `/exec`.
+
+### Foto tidak terkirim
+
+1. Pastikan `foto_drive_id` berisi ID file Drive yang valid.
+2. Pastikan file Drive bisa diakses (minimal "Anyone with link" atau dimiliki akun bot).
+3. Format foto yang didukung Telegram (jpg/png). Cek log Apps Script untuk error Drive/Telegram.
 
 ### Pending updates tidak turun
 

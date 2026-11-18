@@ -55,3 +55,9 @@ global.PropertiesService = {
   }),
   __store: __propsStore,
 };
+
+global.DriveApp = {
+  getFileById: (id) => ({
+    getBlob: () => ({ _fileId: id, getContentType: () => "image/jpeg" }),
+  }),
+};
