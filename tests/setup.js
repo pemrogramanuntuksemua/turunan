@@ -61,3 +61,7 @@ global.DriveApp = {
     getBlob: () => ({ _fileId: id, getContentType: () => "image/jpeg" }),
   }),
 };
+
+global.Utilities = {
+  newBlob: (data, contentType, name) => ({ _data: data, _contentType: contentType, _name: name }),
+};

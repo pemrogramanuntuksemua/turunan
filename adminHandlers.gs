@@ -222,11 +222,37 @@ function handleHapusFoto(chatId, text, senderName, userId, username) {
   } catch (e) { balasError(chatId, e); }
 }
 
+function handleExportCsv(chatId, text, senderName, userId, username) {
+  if (!requireAdmin(chatId, userId)) return;
+  const orang = getOrang();
+  const header = ["id_person", "nama", "jenis_kelamin", "tanggal_lahir", "tanggal_wafat", "status", "no_hp", "alamat", "catatan", "foto_drive_id"];
+  const lines = [header.join(",")];
+  orang.forEach((o) => {
+    const vals = header.map((h) => {
+      const v = str(o[h]);
+      if (v.indexOf(",") >= 0 || v.indexOf("\"") >= 0 || v.indexOf("\n") >= 0) {
+        return "\"" + v.replace(/"/g, "\"\"") + "\"";
+      }
+      return v;
+    });
+    lines.push(vals.join(","));
+  });
+  const csv = lines.join("\n");
+  try {
+    const blob = Utilities.newBlob(csv, "text/csv", "orang.csv");
+    const url = "https://api.telegram.org/bot" + TELEGRAM_TOKEN + "/sendDocument";
+    UrlFetchApp.fetch(url, { method: "post", payload: { chat_id: chatId, document: blob, caption: "Export data orang (" + orang.length + " baris)" } });
+    sendAdminMessage(chatId, "✅ Export CSV dikirim (" + orang.length + " baris).");
+  } catch (e) {
+    balasError(chatId, new Error("Gagal export CSV: " + (e && e.message ? e.message : e)));
+  }
+}
+
 // Node/Jest compatibility
 if (typeof module !== "undefined" && module.exports) {
     const core = (typeof require !== "undefined") ? require("./core.gs") : null;
     if (core) Object.keys(core).forEach((k) => { if (typeof global !== "undefined") global[k] = core[k]; });
     module.exports = {
-        handleAdmin, handleTambahOrang, handleEditOrang, handleHubungkanAnak, handleCopotOrang, handleNikah, handleCerai, handleHapusOrang, handleDaftar, handleVerifikasi, handleTolak, handleCabut, handleBuatPengumuman, handleSetting, handleSet, handleSetFoto, handleHapusFoto,
+        handleAdmin, handleTambahOrang, handleEditOrang, handleHubungkanAnak, handleCopotOrang, handleNikah, handleCerai, handleHapusOrang, handleDaftar, handleVerifikasi, handleTolak, handleCabut, handleBuatPengumuman, handleSetting, handleSet, handleSetFoto, handleHapusFoto, handleExportCsv,
     };
 }

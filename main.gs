@@ -42,6 +42,7 @@ const CMD_GABUNG = "/gabung";
 const CMD_SAYA = "/saya";
 const CMD_PENGUMUMAN = "/pengumuman";
 const CMD_FOTO = "/foto";
+const CMD_EXPORTCSV = "/exportcsv";
 
 const CMD_TAMBAHORANG = "/tambahorang";
 const CMD_SETFOTO = "/setfoto";
@@ -97,6 +98,7 @@ function getPrefixHandlers() {
       [CMD_SAYA]: _G.handleSaya,
       [CMD_PENGUMUMAN]: _G.handlePengumuman,
       [CMD_FOTO]: _G.handleFoto,
+      [CMD_EXPORTCSV]: _G.handleExportCsv,
       [CMD_TAMBAHORANG]: _G.handleTambahOrang,
       [CMD_SETFOTO]: _G.handleSetFoto,
       [CMD_HAPUSFOTO]: _G.handleHapusFoto,

@@ -99,6 +99,7 @@ Perintah ini dijalankan dari editor Apps Script, bukan lewat bot.
 | `/hapusorang id` | Nonaktifkan orang | `/hapusorang P-005` |
 | `/setfoto id_person#driveFileId` | Simpan ID file foto di Google Drive | `/setfoto P-001#1AbC...` |
 | `/hapusfoto id_person` | Hapus referensi foto | `/hapusfoto P-001` |
+| `/exportcsv` | Export data orang ke CSV (dikirim ke admin) | `/exportcsv` |
 | `/daftar [filter]` | Daftar orang | `/daftar` |
 | `/verifikasi <id_person/id_telegram>` | Setujui keterkaitan | `/verifikasi P-001` |
 | `/tolak <id_person/id_telegram>` | Tolak keterkaitan | `/tolak 123456789` |
