@@ -47,7 +47,7 @@ function formatOrangCard(o, includePrivate, chatId) {
     t += (o.no_hp ? "HP: " + escMd(o.no_hp) + "\n" : "") + (o.alamat ? "Alamat: " + escMd(o.alamat) + "\n" : "");
   }
   if (o.catatan) t += "Catatan: " + escMd(o.catatan) + "\n";
-  if (o.foto_drive_id) t += "📷 Foto tersedia (gunakan /foto " + o.id_person + ")\n";
+  if (o.foto_drive_id) t += "📷 Foto: " + cmdLink("/foto " + o.id_person) + "\n";
   t += "\n*Orang tua:*\n" + (ortu.length ? ortu.map((r) => "• " + r.id_orangtua + " " + escMd(cariOrang(r.id_orangtua).nama) + " (" + r.jenis + ")").join("\n") : "• -") + "\n";
   t += "*Pasangan:*\n" + (pas.length ? pas.map((p) => {
     const other = p.id_suami.toUpperCase() === o.id_person.toUpperCase() ? p.id_istri : p.id_suami;
