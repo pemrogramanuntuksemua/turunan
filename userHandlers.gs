@@ -1,25 +1,33 @@
+function isRegisteredUser(userId) {
+  if (isAdmin(userId)) return true;
+  try {
+    return getTelegramUserRows().some((t) => t.id_telegram === str(userId));
+  } catch (e) {
+    return false;
+  }
+}
+
 function handleStart(chatId, text, senderName, userId, username) {
-  const namaKeluarga = getSetting("nama_keluarga", "Keluarga");
-  sendTelegramMessage(chatId,
-    "👋 *Selamat datang di Bot Pohon Keluarga*\n\n" +
-    "Keluarga: *" + escMd(namaKeluarga) + "*\n\n" +
-    "*Perintah warga:*\n" +
-    "/cari <nama/id> - cari orang\n" +
-    "/orang <id> - kartu orang\n" +
-    "/orangtua <id> - orang tua\n" +
-    "/anak <id> - daftar anak\n" +
-    "/pasangan <id> - pasangan\n" +
-    "/saudara <id> - saudara\n" +
-    "/leluhur <id> [level] - leluhur\n" +
-    "/keturunan <id> [level] - keturunan\n" +
-    "/pohon <id> [level] - tampilan pohon\n" +
-    "/stat - statistik\n" +
-    "/gabung <id> - hubungkan akun (DM)\n" +
-    "/saya - cek keterkaitan (DM)\n" +
-    "/pengumuman - pengumuman terbaru\n\n" +
-    (isAdmin(userId) ? "*Perintah pengurus:* /tambahorang, /editorang, /nikah, /daftar, /admin, dll.\n" : "") +
-    "Kirim lewat DM untuk data pribadi."
-  );
+  let namaKeluarga = "Keluarga";
+  try { namaKeluarga = getSetting("nama_keluarga", "Keluarga"); } catch (e) {}
+  let replyText = "👋 *Selamat datang di Bot Pohon Keluarga*\n\n" +
+    "Keluarga: *" + escMd(namaKeluarga) + "*\n\n";
+  if (!isRegisteredUser(userId)) {
+    replyText +=
+      "Akun Anda belum terdaftar. Silakan daftar terlebih dahulu:\n" +
+      "`/gabung <id>` - Hubungkan akun (DM)\n" +
+      "`/saya` - Cek status keterkaitan akun\n\n" +
+      "_Contoh: /gabung P-001_";
+    const pesan = replyText.replace(/`/g, "");
+    sendTelegramMessage(chatId, pesan);
+    return;
+  }
+  replyText += "Pilih menu:\n" + "`/untukwarga` - Menu untuk warga\n" + "`/untukadmin` - Menu untuk admin\n";
+  if (isAdmin(userId)) {
+    replyText += "`/system` - Menu system (root admin)\n";
+  }
+  const pesan = replyText.replace(/`/g, "");
+  sendTelegramMessage(chatId, pesan);
 }
 
 function handleCari(chatId, text) {
@@ -266,11 +274,95 @@ function handleFoto(chatId, text, senderName, userId, username) {
   }
 }
 
+function handleUntukWarga(chatId, text, senderName, userId) {
+  try {
+    let replyText =
+      "📋 *MENU WARGA*\n\n" +
+      "`/cari <nama/id>` - Cari orang\n" +
+      "`/orang <id>` - Kartu orang\n" +
+      "`/orangtua <id>` - Orang tua\n" +
+      "`/anak <id>` - Daftar anak\n" +
+      "`/pasangan <id>` - Pasangan\n" +
+      "`/saudara <id>` - Saudara\n" +
+      "`/leluhur <id> [level]` - Leluhur\n" +
+      "`/keturunan <id> [level]` - Keturunan\n" +
+      "`/pohon <id> [level]` - Tampilan pohon\n" +
+      "`/stat` - Statistik\n" +
+      "`/pengumuman` - Pengumuman terbaru\n" +
+      "`/foto <id>` - Foto orang\n" +
+      "`/gabung <id>` - Hubungkan akun (DM)\n" +
+      "`/saya` - Cek keterkaitan (DM)\n\n" +
+      "`/start` - Kembali ke menu awal\n";
+    const pesan = replyText.replace(/`/g, "");
+    sendTelegramMessage(chatId, pesan);
+  } catch (e) {
+    balasError(chatId, e);
+  }
+}
+
+function handleUntukAdmin(chatId, text, senderName, userId) {
+  if (!isAdmin(userId)) {
+    tolakAdmin(chatId);
+    return;
+  }
+  try {
+    const replyText =
+      "👮 *MENU ADMIN*\n\n" +
+      "*Data orang/relasi:*\n" +
+      "`/tambahorang Nama#L/P#lahir#wafat#catatan` - Tambah orang\n" +
+      "`/editorang id#field=nilai` - Ubah data orang\n" +
+      "`/hubungkananak id_anak#id_ortu1#id_ortu2#jenis` - Set orang tua\n" +
+      "`/copotorang id_anak#id_ortu` - Lepas relasi orang tua\n" +
+      "`/nikah id1#id2#tanggal` - Catat pernikahan\n" +
+      "`/cerai id_pasangan` - Tandai cerai\n" +
+      "`/hapusorang id` - Nonaktifkan orang\n" +
+      "`/setfoto id_person#driveFileId` - Simpan foto\n" +
+      "`/hapusfoto id_person` - Hapus foto\n" +
+      "`/exportcsv` - Export data orang\n" +
+      "`/daftar [filter]` - Daftar orang\n\n" +
+      "*Administrasi akun/pengumuman:*\n" +
+      "`/verifikasi <id_person/id_telegram>` - Setujui keterkaitan\n" +
+      "`/tolak <id_person/id_telegram>` - Tolak keterkaitan\n" +
+      "`/cabut <id_person/id_telegram>` - Putuskan keterkaitan\n" +
+      "`/buatpengumuman Kategori#Isi` - Simpan & broadcast\n" +
+      "`/admin` - Daftar admin\n" +
+      "`/admin tambah#id` / `/admin hapus#id` - Kelola admin\n" +
+      "`/setting` - Daftar setting\n" +
+      "`/set kunci#nilai` - Ubah setting\n\n" +
+      "`/start` - Kembali ke menu awal\n";
+    const pesan = replyText.replace(/`/g, "");
+    sendTelegramMessage(chatId, pesan);
+  } catch (e) {
+    balasError(chatId, e);
+  }
+}
+
+function handleSystem(chatId, text, senderName, userId) {
+  if (!isAdminInti(userId)) {
+    tolakAdmin(chatId);
+    return;
+  }
+  try {
+    const replyText =
+      "🛠️ *MENU SYSTEM*\n\n" +
+      "`/setting` - Daftar pengaturan\n" +
+      "`/set kunci#nilai` - Ubah pengaturan\n" +
+      "`/admin` - Daftar admin inti & tambahan\n" +
+      "`/admin tambah <id_telegram>` - Tambah admin\n" +
+      "`/admin hapus <id_telegram>` - Hapus admin tambahan\n\n" +
+      "`/start` - Kembali ke menu awal\n";
+    const pesan = replyText.replace(/`/g, "");
+    sendTelegramMessage(chatId, pesan);
+  } catch (e) {
+    balasError(chatId, e);
+  }
+}
+
 // Node/Jest compatibility
 if (typeof module !== "undefined" && module.exports) {
     const core = (typeof require !== "undefined") ? require("./core.gs") : null;
     if (core) Object.keys(core).forEach((k) => { if (typeof global !== "undefined") global[k] = core[k]; });
     module.exports = {
-        handleStart, handleCari, handleOrang, handleOrangTua, handleAnak, handlePasangan, handleSaudara, handleLeluhur, handleKeturunan, handlePohon, handleStat, handleGabung, handleSaya, handlePengumuman, handleFoto,
+        handleStart, handleCari, handleOrang, handleOrangTua, handleAnak, handlePasangan, handleSaudara, handleLeluhur, handleKeturunan, handlePohon, handleStat, handleGabung, handleSaya, handlePengumuman, handleFoto, handleUntukWarga, handleUntukAdmin, handleSystem,
     };
 }

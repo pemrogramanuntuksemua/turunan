@@ -40,6 +40,9 @@ const CMD_POHON = "/pohon";
 const CMD_STAT = "/stat";
 const CMD_GABUNG = "/gabung";
 const CMD_SAYA = "/saya";
+const CMD_UNTUKWARGA = "/untukwarga";
+const CMD_UNTUKADMIN = "/untukadmin";
+const CMD_SYSTEM = "/system";
 const CMD_PENGUMUMAN = "/pengumuman";
 const CMD_FOTO = "/foto";
 const CMD_EXPORTCSV = "/exportcsv";
@@ -96,6 +99,9 @@ function getPrefixHandlers() {
       [CMD_STAT]: _G.handleStat,
       [CMD_GABUNG]: _G.handleGabung,
       [CMD_SAYA]: _G.handleSaya,
+      [CMD_UNTUKWARGA]: _G.handleUntukWarga,
+      [CMD_UNTUKADMIN]: _G.handleUntukAdmin,
+      [CMD_SYSTEM]: _G.handleSystem,
       [CMD_PENGUMUMAN]: _G.handlePengumuman,
       [CMD_FOTO]: _G.handleFoto,
       [CMD_EXPORTCSV]: _G.handleExportCsv,
@@ -154,6 +160,7 @@ function handleCommand(chatId, text, senderName, userId, username) {
 }
 
 function processItem(chatId, text, senderName, userId, username) {
+  _G.CURRENT_USER_ID = userId;
   const cleanText = str(text);
   const token = cleanText.split(/\s+/)[0].toLowerCase();
   const handler = getPrefixHandlers()[token];
@@ -188,6 +195,9 @@ if (typeof module !== "undefined" && module.exports) {
     global.TELEGRAM_DITOLAK = TELEGRAM_DITOLAK;
     global.TELEGRAM_DICABUT = TELEGRAM_DICABUT;
     global.CMD_START = CMD_START;
+    global.CMD_UNTUKWARGA = CMD_UNTUKWARGA;
+    global.CMD_UNTUKADMIN = CMD_UNTUKADMIN;
+    global.CMD_SYSTEM = CMD_SYSTEM;
     global.PREFIX_HANDLERS = getPrefixHandlers();
     global.handleCommand = handleCommand;
     global.processItem = processItem;

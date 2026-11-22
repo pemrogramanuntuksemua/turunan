@@ -70,7 +70,8 @@ Perintah ini dijalankan dari editor Apps Script, bukan lewat bot.
 
 | Perintah | Keterangan | Contoh |
 |---|---|---|
-| `/start` | Sambutan & daftar perintah | `/start` |
+| `/start` | Sambutan & menu yang sesuai status akun | `/start` |
+| `/untukwarga` | Menu perintah untuk warga | `/untukwarga` |
 | `/cari <nama/id>` | Cari orang | `/cari Ahmad` |
 | `/orang <id>` | Kartu orang + relasi | `/orang P-001` |
 | `/orangtua <id>` | Orang tua | `/orangtua P-003` |
@@ -106,6 +107,8 @@ Perintah ini dijalankan dari editor Apps Script, bukan lewat bot.
 | `/cabut <id_person/id_telegram>` | Putuskan keterkaitan | `/cabut P-001` |
 | `/buatpengumuman Kategori#Isi` | Simpan & broadcast | `/buatpengumuman Info#Kerja bakti` |
 | `/admin` | Daftar admin | `/admin` |
+| `/untukadmin` | Menu perintah untuk admin (dikelompokkan) | `/untukadmin` |
+| `/system` | Menu system (khusus admin inti) | `/system` |
 | `/admin tambah#id` / `/admin hapus#id` | Kelola admin tambahan (khusus inti) | `/admin tambah#123456789` |
 | `/setting` | Daftar setting | `/setting` |
 | `/set kunci#nilai` | Ubah setting | `/set nama_keluarga#Keluarga Besar` |

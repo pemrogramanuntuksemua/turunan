@@ -1,3 +1,5 @@
+const _G = (typeof global !== "undefined") ? global : (typeof globalThis !== "undefined" ? globalThis : this);
+
 function str(v) { return v === null || v === undefined ? "" : String(v).trim(); }
 function aman(fn) { try { fn(); } catch (e) {} }
 function parseAngka(v) {
@@ -653,9 +655,32 @@ function pecahPesan(text, max) {
   if (buf) hasil.push(buf);
   return hasil;
 }
+function footerMenuUntukUser(userId) {
+  const id = str(userId);
+  if (!id) return "";
+  if (isAdminInti(id)) {
+    return "\\n\\n`/untukwarga` - Menu warga\\n`/untukadmin` - Menu admin\\n`/system` - Menu system";
+  }
+  if (isAdmin(id)) {
+    return "\\n\\n`/untukwarga` - Menu warga\\n`/untukadmin` - Menu admin";
+  }
+  try {
+    const terdaftar = getTelegramUserRows().some((t) => t.id_telegram === id);
+    if (terdaftar) return "\\n\\n`/untukwarga` - Menu warga";
+  } catch (e) {
+    // abaikan
+  }
+  return "";
+}
+
 function sendTelegramMessage(chatId, text) {
   const url = "https://api.telegram.org/bot" + TELEGRAM_TOKEN + "/sendMessage";
-  const potongan = pecahPesan(text);
+  let pesan = str(text);
+  const footer = footerMenuUntukUser(typeof _G !== "undefined" ? _G.CURRENT_USER_ID : "");
+  if (footer && pesan.indexOf("/untukwarga") < 0 && pesan.indexOf("/untukadmin") < 0 && pesan.indexOf("/system") < 0) {
+    pesan = pesan + footer;
+  }
+  const potongan = pecahPesan(pesan);
   potongan.forEach((teks) => {
     const payload = { chat_id: chatId, text: teks, parse_mode: "Markdown" };
     const options = { method: "post", contentType: "application/json", payload: JSON.stringify(payload) };
